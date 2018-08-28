@@ -18,10 +18,11 @@ https://github.com/zhanjunxiong/RillServer
 * skynet skynet框架
 
 ## 启动方式
+``git submodule update --init --recursive``
 ``cd skynet``
 ``yum install autoconf``
 ``make linux``
-``cd ..``
+``cd ../lualib-src``
 ``make linux``
 ``./start.sh``
 
