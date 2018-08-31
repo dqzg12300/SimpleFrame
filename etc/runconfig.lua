@@ -33,6 +33,9 @@ return {
 		dbproxy = {
 			[1] = {node = "node1"},
 		},
+		gate={
+			[1]={node="node1"},
+		}
     },
 	--玩家数据表配置
 	playerdata = {
