@@ -13,23 +13,25 @@ local event=module.event
 
 local db={
 	["wx_user"]=nil,
+	["accountdb"]=nil,
 }
 
 local function init(conf)
 	if not conf.enable then
-		log.info("db "..conf.db_name.." is enable false")
+        WARN("db "..conf.db_name.." is enable false")
 		return nil
 	end
 	local dbtype=conf.db_type
 	local dbc=require(dbtype)
 	local mdb= dbc:start(conf)
 	assert(mdb)
+    log.info("dbname:%s dbtype:%s connect success",conf.db_name,conf.db_type)
 	return mdb
 end
 
 function event.awake()
 	db.wx_user=init(dbconf.wx_user)
-	
+    db.accountdb=init(dbconf.accountdb)
 end
 
 function dispatch.get(dbname,cname,select)

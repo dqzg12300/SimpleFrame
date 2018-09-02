@@ -6,7 +6,9 @@
 
 local skynet=require "skynet"
 local gateserver=require "faci.gateserver"
-
+local log=require "log"
+local liblogin=require "liblogin"
+local libagentpool=require "libagentpool"
 local connect={}
 local handler={}
 local name
@@ -18,6 +20,7 @@ local function close_agent(fd)
         if c.uid then
             --todo中心服退出,agentpool回收
         end
+        libagentpool.recycle(c.agent)
         connect[fd]=nil
         gateserver.close_agent(fd)
     end
@@ -26,12 +29,12 @@ end
 
 --函数执行错误时打印错误信息
 local function trace_err(cmd)
-    WARN("gate command trace err cmd:%s err:%s",cmd,debug.traceback())
+    log.warn("gate command trace err cmd:%s err:%s",cmd,debug.traceback())
 end
 
 --网关启动
 function handler.open(source,conf)
-    DEBUG("gate open name:%s start listen port:%d",conf.name,conf.port)
+    log.debug("gate open name:%s start listen port:%d",conf.name,conf.port)
     name=conf.name
 end
 
@@ -46,45 +49,46 @@ function handler.connect(fd,addr)
     }
     connect[fd]=c
     gateserver.openclient(fd)
-    DEBUG("gate connect fd:%d addr:%d",fd,addr)
+    log.debug("gate connect fd:%d addr:%s",fd,addr)
 end
 
 --客户端消息处理
 function handler.message(fd,msg,sz)
     local c=connect[fd]
     if not c then
-        ERROR("gate message fd:%d not found client",fd)
+        log.error("gate message fd:%d not found client",fd)
     end
     local source=skynet.self()
     local uid=c.uid
     if uid then
         skynet.redirect(c.agent,source,"client",fd,msg,sz)
-        DEBUG("gate message redirect agent fd:%d",fd)
+        log.debug("gate message redirect agent fd:%d",fd)
     else
-        --todo 转发给login服务处理登录
-        DEBUG("gate message redirect login fd:%d",fd)
+        local login=liblogin.fetch_login()
+        skynet.redirect(login,source,"client",fd,msg,sz)
+        log.debug("gate message redirect login fd:%d",fd)
     end
 end
 
 --连接断开处理
 function handler.disconnect(fd)
     close_agent(fd)
-    DEBUG("gate disconnect fd:%d",fd)
+    log.debug("gate disconnect fd:%d",fd)
 end
 
 function handler.error(fd)
     close_agent(fd)
-    ERROR("gate error fd:%d",fd)
+    log.debug("gate error fd:%d",fd)
 end
 
 function handler.warning(fd,sz)
-    WARN("gate warning fd:%d sz:%d",fd,sz)
+    log.warn("gate warning fd:%d sz:%d",fd,sz)
 end
 
 function handler.command(cmd,source,...)
     local f=CMD[cmd]
     if not f then
-        WARN("gate command cmd:%s not found",cmd)
+        log.warn("gate command cmd:%s not found",cmd)
         return nil
     end
     local isok,ret=xpcall(f,trace_err,...)
@@ -107,7 +111,7 @@ end
 
 function CMD.kick(source,fd)
     close_agent(data.fd)
-    DEBUG("gate cmd kick fd:%d",fd)
+    log.debug("gate cmd kick fd:%d",fd)
 end
 
 gateserver.start(handler)

@@ -15,7 +15,7 @@ preload    = app_root.."preload/preload.lua"
 
 cpath		= app_root.."cservice/?.so;"..skynet_root.."cservice/?.so;"
 luaservice	= app_root.."service/?.lua;"..
-              app_root.."service/reserve/?.lua;" ..
+              app_root.."service/agent/?.lua;" ..
               app_root.."service/room/?.lua;" ..
               
               skynet_root.."service/?.lua;"

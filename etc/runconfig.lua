@@ -18,6 +18,7 @@ return {
 
 		--dbproxy服务
 		dbproxy_common = {
+            --mysql数据库配置表模板.mysql暂时不支持一个库多个表查询
 			wx_user = {
 				db_type = "mysqldb",
 				host = "127.0.0.1", 
@@ -26,16 +27,32 @@ return {
 				database="demo",
 				user="root",
 				password="123456",
-				enable=false
-			}, 
+				enable=false,
+			},
+            --mongodb数据库配置表模板
+            accountdb = {
+                db_type = "mongodb",
+                host = "127.0.0.1",
+                db_name = "account",
+                enable=false,
+            },
 		},
 
 		dbproxy = {
 			[1] = {node = "node1"},
 		},
-		gate={
-			[1]={node="node1"},
+		gateway={
+			[1]={node="node1",port=11200},
+		},
+        gateway_common={maxclient=1024,nodelay=true},
+
+		agent_pool={
+			name="agentpool1",maxnum=10,recycle=1,
+		},
+		login={
+			[1]={node="node1"}
 		}
+
     },
 	--玩家数据表配置
 	playerdata = {
