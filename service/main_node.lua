@@ -62,12 +62,22 @@ local function start_agentpool()
     })
 end
 
+local function start_center()
+    for i,v in pairs(serverconf.center) do
+        if nodename==v.node then
+            skynet.newservice("center","center",i)
+            INFO("start center")
+        end
+    end
+end
+
 skynet.start(function()
 	INFO("server start")
 	start_debug_console()
 	start_dbporxy()
     start_login()
     start_agentpool()
+    start_center()
 	start_gate()
 	skynet.exit()
 end)

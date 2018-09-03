@@ -51,8 +51,10 @@ return {
 		},
 		login={
 			[1]={node="node1"}
-		}
-
+		},
+		center={
+			[1]={node="node1"}
+		},
     },
 	--玩家数据表配置
 	playerdata = {
