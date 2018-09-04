@@ -11,6 +11,7 @@ local env=require "faci.env"
 local cluster=require "skynet.cluster"
 local module=faci.get_module("center")
 local dispatch=module.dispatch
+local nodename=skynet.getenv("nodename")
 
 --初始化
 env.users=env.users or {}
@@ -100,4 +101,35 @@ function dispatch.watch(acm)
     acm.logined=acm.logined and acm.logined+logined or logined
     acm.logining=acm.logining and acm.logining+logining or logining
     return ret,acm
+end
+
+--广播消息给全部客户端
+function dispatch.broadcast(msg)
+    for i,user in pairs(env.users) do
+        log.debug("broadcast to uid:%d",user.uid)
+        dispatch.send2client(user.uid,msg)
+    end
+end
+
+--发送给客户端,如果是当前节点,就直接发送,否则就发到对应的节点去处理
+local function send(node,addr,cmd,...)
+    if nodename==node then
+        skynet.send(addr,"lua",cmd,...)
+    else
+        cluster.send(node,addr,cmd,...)
+    end
+end
+
+--发送消息给指定客户端
+function dispatch.send2client(uid,msg)
+    local user=env.users[uid]
+    if not user then
+        log.debug("center send2client uid:%d not found",uid)
+        return
+    end
+    if not user.agent then
+        log.debug("center send2client uid:%d not agent",uid)
+        return
+    end
+    send(user.node,user.agent,"send2client",msg)
 end

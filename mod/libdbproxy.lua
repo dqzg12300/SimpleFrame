@@ -23,27 +23,55 @@ local function next_dbproxy()
     return dbproxy[next_id]
 end
 
-
-function M.get_wxuser(account)
-    local db = next_dbproxy()
-    return skynet.call(db, "lua", "dbproxy.get", "wx_user", "wx_user", {wxname=account})
+function M.get_accountdata(account)
+    local db = fetch_dbproxy(account)
+    return skynet.call(db, "lua", "dbproxy.get", "account", "account", {account=account})
 end
 
-function M.set_wxuser(account, update)
-    local db = next_dbproxy()
-    return skynet.call(db, "lua", "dbproxy.set", "wx_user", "wx_user", {wxname=account}, update)
+function M.set_accountdata(account, update)
+    local db = fetch_dbproxy(uid)
+    return skynet.call(db, "lua", "dbproxy.set", "account", "account", {account=account}, update)
 end
 
-function M.add_wxuser(cname, data)
-    local db = next_dbproxy()
-    return skynet.call(db, "lua", "dbproxy.insert", "wx_user", cname, data)
+
+function M.get_playerdata(cname, uid)
+    local db = fetch_dbproxy(uid)
+    return skynet.call(db, "lua", "dbproxy.get", "game", cname, {uid=uid})
 end
 
+function M.set_playerdata(cname, uid, update)
+    local db = fetch_dbproxy(uid)
+    return skynet.call(db, "lua", "dbproxy.set", "game", cname, {uid=uid}, update)
+end
+
+function M.get_globaldata(cname, key)
+    local db = fetch_dbproxy(uid)
+    return skynet.call(db, "lua", "dbproxy.get", "global", cname, {name=key})
+end
+
+function M.set_globaldata(cname, key, update)
+    local db = fetch_dbproxy(uid)
+    return skynet.call(db, "lua", "dbproxy.set", "global", cname, {name=key}, update)
+end
+
+function M.add_dblog(cname, data)
+    local db = fetch_dbproxy(uid)
+    return skynet.call(db, "lua", "dbproxy.insert", "log", cname, data)
+end
 
 local function inc_uid_cname(cname)
     local db = next_dbproxy()
     return skynet.call(db, "lua", "dbproxy.incr", cname)
-end 
+end
+
+function M.inc_uid()
+    return inc_uid_cname("account")
+end
+
+function M.inc_room()
+    return inc_uid_cname("roomid")
+end
+
 
 skynet.init(init)
 

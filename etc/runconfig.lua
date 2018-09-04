@@ -34,8 +34,14 @@ return {
                 db_type = "mongodb",
                 host = "127.0.0.1",
                 db_name = "account",
-                enable=false,
+                enable=true,
             },
+			globaldb = {
+				db_type = "mongodb",
+				host = "127.0.0.1",
+				db_name = "global",
+				enable=true,
+			},
 		},
 
 		dbproxy = {
