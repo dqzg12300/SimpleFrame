@@ -62,6 +62,23 @@ local function start_agentpool()
     })
 end
 
+local function start_center()
+    for i,v in pairs(serverconf.center) do
+        if nodename==v.node then
+            skynet.newservice("center","center",i)
+            INFO("start center")
+        end
+    end
+end
+
+local function start_scenes()
+    for i,v in pairs(serverconf.scenes) do
+        if nodename==v.node then
+            skynet.newservice("scene","scene",i)
+        end
+    end
+end
+
 --local function testpbc()
 --    local protopack=require "protopack"
 --    local test={name="king",age=18}
@@ -72,14 +89,6 @@ end
 --    INFO(data)
 --end
 
-local function start_center()
-    for i,v in pairs(serverconf.center) do
-        if nodename==v.node then
-            skynet.newservice("center","center",i)
-            INFO("start center")
-        end
-    end
-end
 
 skynet.start(function()
 	INFO("server start")
@@ -88,6 +97,7 @@ skynet.start(function()
     start_login()
     start_agentpool()
     start_center()
+    start_scenes()
 	start_gate()
 	skynet.exit()
 end)

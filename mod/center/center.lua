@@ -81,7 +81,7 @@ function dispatch.logout(uid,key,reason)
             return false
         end
     end
-    log.debug("center logout uid:%d success")
+    log.debug("center logout uid:%d success",uid)
     env.users[uid]=nil
     return true
 end

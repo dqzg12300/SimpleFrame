@@ -11,12 +11,12 @@ local serconfig=runconfig.service
 local M={}
 
 local function get()
-    local pool=serconfig.pool_common.name
+    local pool=serconfig.agent_pool.name
     return skynet.call(pool,"lua","get")
 end
 
 function M.recycle(agent)
-    local pool=serconfig.pool_common.name
+    local pool=serconfig.agent_pool.name
     return skynet.call(pool,"lua","recycle",agent)
 end
 

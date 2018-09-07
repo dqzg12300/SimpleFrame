@@ -34,7 +34,8 @@ end
 ]]
 local function load_data(cname, uid)
     local ret = {data=nil, hashcode=nil}
-
+    INFO("get player data")
+    INFO(cname)
     ret.data = libdbproxy.get_playerdata(cname, uid)
     ret.data = ret.data or get_init_data(cname)
     if ret.data._id then

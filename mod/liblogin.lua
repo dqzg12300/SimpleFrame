@@ -21,12 +21,13 @@ local function init()
             local name=string.format("login%d",i)
             table.insert(login_services,name)
             login_num=login_num+1
+            log.info("liblogin init %s",name)
         end
     end
 end
 
 --获取一个login服务.
-function fetch_login()
+function M.fetch_login()
     next_id=next_id%login_num+1
     return login_services[next_id]
 end

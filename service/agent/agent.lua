@@ -17,12 +17,15 @@ local CMD={}
 local clientfd
 local accountdata
 require "libstring"
+require "agent.agent"
+
 
 --客户端消息处理服务初始化
 function CMD.start(conf)
+    log.debug("agent start clientfd:%d",conf.clientfd)
     clientfd=conf.clientfd
     accountdata=conf.accountdata
-    log.debug("agent start clientfd:%d account:%d",clientfd,accountdata.account)
+    return env.login(accountdata)
 end
 
 --发送消息给对应客户端
@@ -37,14 +40,14 @@ end
 
 --与客户端连接断开时的处理
 function CMD.disconnect()
-    log.debug("agent cmd.disconnect account:%d logout",accountdata)
+    log.debug("agent cmd.disconnect account:%s logout",accountdata.account)
     env.logout(accountdata)
     return true
 end
 
 --踢出玩家的处理
 function CMD.kick()
-    log.debug("agent cmd.kick account:%d kick",accountdata)
+    log.debug("agent cmd.kick account:%s kick",accountdata.account)
     local kickroom=env.dispatch["kick_room"]
     if type(kickroom)=="function" then
         kickroom()

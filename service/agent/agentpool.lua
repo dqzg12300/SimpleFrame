@@ -29,7 +29,7 @@ end
 
 --获取一个处理客户端消息的服务
 function CMD.get()
-    local agent=table.remove()
+    local agent=table.remove(pool)
     if not agent then
         agent=assert(skynet.newservice(agentname))
         agentlist[agent]=agent

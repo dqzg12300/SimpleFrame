@@ -14,6 +14,7 @@ local event=module.event
 local db={
 	["account"]=nil,
     ["global"]=nil,
+    ["game"]=nil,
 }
 
 local function init(conf)
@@ -32,6 +33,7 @@ end
 function event.awake()
     db.account=init(dbconf.accountdb)
     db.global=init(dbconf.globaldb)
+    db.game=init(dbconf.gamedb)
 end
 
 function dispatch.get(dbname,cname,select)

@@ -51,7 +51,7 @@ local function check_normal_sdk(account, password)
 end
 
 return function(userdata)
-    local account = userdata.account
+    local account = userdata.username
     local password = userdata.password
     return check_normal_sdk(account, password)
 end

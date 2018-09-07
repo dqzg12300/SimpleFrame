@@ -42,6 +42,12 @@ return {
 				db_name = "global",
 				enable=true,
 			},
+            gamedb = {
+                db_type = "mongodb",
+                host = "127.0.0.1",
+                db_name = "game",
+                enable = true,
+            }
 		},
 
 		dbproxy = {
@@ -61,6 +67,9 @@ return {
 		center={
 			[1]={node="node1"}
 		},
+		scenes={
+			[1]={node="node1",name="fucklandlords",cn_name="斗地主"}
+		}
     },
 	--玩家数据表配置
 	playerdata = {

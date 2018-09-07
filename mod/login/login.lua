@@ -18,11 +18,9 @@ local nodename=skynet.getenv("nodename")
 
 
 function forward.login(fd, msg, source)
-    local account = msg.account
-    local msgresult={}
-    msgresult.account=msg.account
-    msgresult._cmd=msg._cmd
-    msgresult._check=msg._check
+    local account = msg.username
+    local msgresult={username=msg.username,_cmd=msg._cmd,_check=msg._check}
+
     --key
     key_seq = key_seq + 1
     local key = env.id*10000 + key_seq
@@ -54,7 +52,7 @@ function forward.login(fd, msg, source)
         accountdata = {
             uid = uid,
             account = {
-                account = msg.account,
+                account = msg.username,
                 password = msg.password,
             }
         }

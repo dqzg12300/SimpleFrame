@@ -11,6 +11,7 @@ local liblogin=require "liblogin"
 local libagentpool=require "libagentpool"
 local connect={}
 local handler={}
+local CMD={}
 local name
 
 --关闭客户端连接
@@ -20,9 +21,10 @@ local function close_agent(fd)
         if c.uid then
             --todo中心服退出,agentpool回收
         end
+        INFO(inspect(c))
         libagentpool.recycle(c.agent)
+        gateserver.closeclient(fd)
         connect[fd]=nil
-        gateserver.close_agent(fd)
     end
     return true
 end
@@ -37,6 +39,13 @@ function handler.open(source,conf)
     log.debug("gate open name:%s start listen port:%d",conf.name,conf.port)
     name=conf.name
 end
+
+--向skynet注册消息类型
+skynet.register_protocol {
+    name = "client",
+    id = skynet.PTYPE_CLIENT,
+}
+
 
 --客户端连接连接处理
 function handler.connect(fd,addr)
@@ -61,12 +70,13 @@ function handler.message(fd,msg,sz)
     local source=skynet.self()
     local uid=c.uid
     if uid then
-        skynet.redirect(c.agent,source,"client",fd,msg,sz)
         log.debug("gate message redirect agent fd:%d",fd)
+        skynet.redirect(c.agent,source,"client",fd,msg,sz)
+
     else
         local login=liblogin.fetch_login()
+        log.debug("gate message redirect login fd:%d login:%s",fd,login)
         skynet.redirect(login,source,"client",fd,msg,sz)
-        log.debug("gate message redirect login fd:%d",fd)
     end
 end
 
@@ -91,13 +101,11 @@ function handler.command(cmd,source,...)
         log.warn("gate command cmd:%s not found",cmd)
         return nil
     end
-    local isok,ret=xpcall(f,trace_err,...)
-    return ret
+    return f(source,...)
 end
 
-local CMD={}
-
 function CMD.register(source,data)
+    INFO(inspect(data))
     local c=connect[data.fd]
     if not c then
         return false
@@ -108,9 +116,8 @@ function CMD.register(source,data)
     return true
 end
 
-
 function CMD.kick(source,fd)
-    close_agent(data.fd)
+    close_agent(fd)
     log.debug("gate cmd kick fd:%d",fd)
 end
 

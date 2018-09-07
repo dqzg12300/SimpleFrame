@@ -1,9 +1,6 @@
-local skynet = require "skynet"
-local json = require "cjson"
-local log = require "log"
 local pb = require("protobuf")
-local io = require "io" 
-local crc32 = require "crc32" 
+local io = require "io"
+local crc32 = require "crc32"
 local tool = require "tool"
 local lfstool = require "lfstool"
 
@@ -15,9 +12,9 @@ local pbfilename = {}
 
 --分析proto文件，计算映射表
 local function analysis_file(pathfile, path)
-	local file = io.open(pathfile, "r") 
+	local file = io.open(pathfile, "r")
 	local package = ""
-	
+
 	for line in file:lines() do
 		local s, c = string.gsub(line, "^%s*package%s*([%w%.]+).*$", "%1")
 		if c > 0 then
@@ -32,11 +29,11 @@ local function analysis_file(pathfile, path)
 			code2name[code] = name
 		end
 	end
-	file:close()  
+	file:close()
 end
 
 --导入proto文件，并analysis_file
-local path = skynet.getenv("app_root").."proto"
+local path = "../proto"
 
 local function register_pbfile(path, filename)
     local pathfile = path .. "/" .. filename
@@ -65,6 +62,7 @@ local pb_file = io.open(path.."/pbfile", "a+")
 local content = pb_file:read()
 if not content or content ~= "" then
     lfstool.attrdir(path, function(file)
+
         local file = string.match(file, path.."/(.+%.proto)")
         if file then
             local nosuffix = string.sub(file, 1, -7)
@@ -80,7 +78,7 @@ pb_file:close()
 lfstool.attrdir(path, function(file)
 	local file = string.match(file, path.."/(.+%.proto)") --获取文件名
 	if file then
-		analysis_file(path.."/"..file, path) 
+		analysis_file(path.."/"..file, path)
         register_pbfile(path, file)
 	end
 end)
@@ -101,12 +99,12 @@ function M.pack(cmd, check, msg)
 	--> >:big endian
 	-->i2:前面两位为长度
 	-->i4:int32 checkcode
-    -->I4:uint32 cmd_code 
-	
+    -->I4:uint32 cmd_code
+
 	--code
 	local code = name2code[cmd]
 	if not code then
-		log.error(string.format("protopack_pb fail, cmd:%s", cmd or "nil"))
+        print(string.format("protopack_pb fail, cmd:%s", cmd or "nil"))
 		return
 	end
 	--check
@@ -120,43 +118,43 @@ function M.pack(cmd, check, msg)
 	local f = string.format("> i2 i4 I4 c%d", pblen)
 	local str = string.pack(f, len, check, code, pbstr)
 	--调试
-	log.info("send:"..bin2hex(str))
-	log.info(string.format("send:cmd(%s) check(%d) msg->%s", cmd, check, tool.dump(msg)))
+	print("send:"..bin2hex(str))
+    print(string.format("send:cmd(%s) check(%d) msg->%s", cmd, check, tool.dump(msg)))
     return str
 end
 
 function M.unpack(str)
-	log.info("recv:"..bin2hex(str))
+	print("recv:"..bin2hex(str))
 	local pblen = string.len(str)-4-4
 	local f = string.format("> i4 I4 c%d", pblen)
 	local check, code, pbstr = string.unpack(f, str)
-	log.info("recv pbstr:"..bin2hex(pbstr))
+    print("recv pbstr:"..bin2hex(pbstr))
 	local cmd = code2name[code]
 	if not cmd then
-		log.info("recv:code(%d) but not regiest", code)
-		return 
+        print(string.format("recv:code(%d) but not regiest", code))
+		return
 	end
 	local msg = pb.decode(cmd, pbstr)
-	
-	log.info("recv:cmd(%s) check(%d) msg->%s", cmd, check, tool.dump(msg))
+
+    print(string.format("recv:cmd(%s) check(%d) msg->%s", cmd, check, tool.dump(msg)))
     return cmd, check, msg
 end
 
 --本地测试解包使用,因为前两个字节是协议包大小。网络传递的会被拿掉。本地传递的不会
 function M.local_unpack(str)
-    log.info("recv:"..bin2hex(str))
+    print("recv:"..bin2hex(str))
     local pblen = string.len(str)-4-4-2
     local f = string.format("> i2 i4 I4 c%d", pblen)
     local len,check, code, pbstr = string.unpack(f, str)
-    log.info("recv pbstr:"..bin2hex(pbstr))
+    print("recv pbstr:"..bin2hex(pbstr))
     local cmd = code2name[code]
     if not cmd then
-        log.info("recv:code(%d) but not regiest", code)
+        print(string.format("recv:code(%d) but not regiest", code))
         return
     end
     local msg = pb.decode(cmd, pbstr)
 
-    log.info("recv:cmd(%s) check(%d) msg->%s", cmd, check, tool.dump(msg))
+    print(string.format("recv:cmd(%s) check(%d) msg->%s", cmd, check, tool.dump(msg)))
     return cmd, check, msg
 end
 

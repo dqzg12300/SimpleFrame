@@ -161,9 +161,10 @@ function client_dispatch(session, source, str)
 	end
 	
 	if ret then
-		local rcmd, rcheck = ret._cmd.."result", ret._check
+		local rcmd, rcheck = ret._cmd.."Result", ret._check
 		ret._cmd = nil
 		ret._check = nil
+        INFO(inspect(ret))
 		local data = protopack.pack(rcmd, rcheck, ret)
 		libsocket.send(fd, data)
 	end
