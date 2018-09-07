@@ -18,13 +18,10 @@ https://github.com/zhanjunxiong/RillServer
 * skynet skynet框架
 
 ## 启动方式
-``git submodule update --init --recursive``
-``cd skynet``
-``yum install autoconf``
-``make linux``
-``cd ../lualib-src``
-``make linux``
-``./start.sh``
+* git submodule update --init --recursive
+* yum install autoconf``
+* ./make.sh all
+* 需要先装好protobuf。如碰到警告 No syntax specified for the proto file.这种不用管,是由于例子里面没有syntax="proto2"
 
 ## 数据库相关
 默认的runconfig配置的db节点的enable是false，则不会加载数据库。如已经装好数据库。可以配置好后设置为true启用

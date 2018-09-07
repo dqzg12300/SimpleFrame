@@ -62,6 +62,16 @@ local function start_agentpool()
     })
 end
 
+--local function testpbc()
+--    local protopack=require "protopack"
+--    local test={name="king",age=18}
+--    local cmd="login.login"
+--    local msg=protopack.pack(cmd,0,test)
+--    local ucmd,check,data=protopack.local_unpack(msg)
+--    INFO(ucmd)
+--    INFO(data)
+--end
+
 skynet.start(function()
 	INFO("server start")
 	start_debug_console()
@@ -69,5 +79,6 @@ skynet.start(function()
     start_login()
     start_agentpool()
 	start_gate()
+    --testpbc()
 	skynet.exit()
 end)

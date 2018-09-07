@@ -1,0 +1,8 @@
+syntax="proto2";
+
+package login;
+
+message login {
+    required string name = 1;
+    optional int32  age = 2;
+}

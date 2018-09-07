@@ -7,7 +7,7 @@ return {
 	},
 	--通信协议
 	prototype = "tcp",  --tcp/ws
-	protopack = "pb",   --pb/json
+	protopack = "pbc",   --pbc/json
 
 	--各个服务配置
 	service = {

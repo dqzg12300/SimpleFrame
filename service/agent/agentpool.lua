@@ -6,7 +6,7 @@
 
 local skynet=require "skynet"
 local log=require "log"
-
+require "skynet.manager"
 local pool={}
 local agentlist={}
 local agentname
