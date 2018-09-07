@@ -15,14 +15,14 @@ local queue=require "skynet.queue"
 local cmdfunc_queue=queue()
 local CMD={}
 local clientfd
-local account
+local accountdata
 require "libstring"
 
 --客户端消息处理服务初始化
 function CMD.start(conf)
-    log.debug("agent start clientfd:%d account:%d",conf.clientfd,conf.account)
     clientfd=conf.clientfd
-    account=conf.account
+    accountdata=conf.accountdata
+    log.debug("agent start clientfd:%d account:%d",clientfd,accountdata.account)
 end
 
 --发送消息给对应客户端
@@ -37,19 +37,19 @@ end
 
 --与客户端连接断开时的处理
 function CMD.disconnect()
-    log.debug("agent cmd.disconnect account:%d logout",account)
-    env.logout(account)
+    log.debug("agent cmd.disconnect account:%d logout",accountdata)
+    env.logout(accountdata)
     return true
 end
 
 --踢出玩家的处理
 function CMD.kick()
-    log.debug("agent cmd.kick account:%d kick",account)
+    log.debug("agent cmd.kick account:%d kick",accountdata)
     local kickroom=env.dispatch["kick_room"]
     if type(kickroom)=="function" then
         kickroom()
     end
-    env.logout(account)
+    env.logout(accountdata)
     return true
 end
 
