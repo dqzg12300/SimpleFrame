@@ -10,8 +10,10 @@ local env=require "faci.env"
 local libdbproxy = require "libdbproxy"
 local hash   = require "hash"
 local runconf = require(skynet.getenv("runconfig"))
-
+local mc=require "skynet.multicast"
+local dc=require "skynet.datacenter"
 local player = {}
+local chan
 
 local InitPlayerCMD = {}
 function InitPlayerCMD.init_baseinfo_data()
@@ -90,6 +92,11 @@ local function check_save_data()
     save_data()
 end
 
+local function broadcast(chan,source,data)
+    INFO("broadcast:"..data)
+end
+
+
 function env.login(accountdata)
     -- 从数据库里加载数据
     player = {
@@ -101,12 +108,20 @@ function env.login(accountdata)
 
     player.mod_datas = load_all_data()
     player.mod_datas.baseinfo.login_time = os.time()
-
     skynet.timeout(save_tick, check_save_data)
+    local channel_id=dc.get("multall")
+    --添加组播监听
+    chan=mc.new({
+        channel=channel_id,
+        dispatch=broadcast,
+    })
+    chan:subscribe()
+    INFO(channel_id)
     return true
 end
 
 function env.logout()
     save_data()
+    chan:unsubscribe()
     --是否要 取消 定时保存操作？
 end

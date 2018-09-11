@@ -9,6 +9,7 @@ return {
 	prototype = "tcp",  --tcp/ws
 	protopack = "pbc",   --pbc/json
 
+
 	--各个服务配置
 	service = {
 		--debug_console服务

@@ -64,6 +64,13 @@ function M.broadcast2client(msg)
     M.broadcast("center.broadcast2client", msg)
 end
 
+--通过组播方式广播全部玩家
+function M.broadcast2multcast(...)
+    for i = 1, MAX_CENTER_COUNT do
+        skynet.send(centers[i], "lua", "center.multcast", ...)
+    end
+end
+
 skynet.init(init)
 
 return M

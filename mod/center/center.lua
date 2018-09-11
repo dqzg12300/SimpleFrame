@@ -9,12 +9,15 @@ local log=require "log"
 local faci=require "faci.module"
 local env=require "faci.env"
 local cluster=require "skynet.cluster"
+local mc=require "skynet.multicast"
+local dc=require "skynet.datacenter"
 local module=faci.get_module("center")
 local dispatch=module.dispatch
 local nodename=skynet.getenv("nodename")
-
+local channel
 --初始化
 env.users=env.users or {}
+
 
 --中心服登录玩家信息,如果有玩家信息存在,则先登出,然后再重新登录
 function dispatch.login(uid,data)
@@ -133,3 +136,20 @@ function dispatch.send2client(uid,msg)
     end
     send(user.node,user.agent,"send2client",msg)
 end
+
+function dispatch.multcast(msg)
+    if channel then
+        channel:publish(msg)
+        log.debug("multcast:",msg)
+    else
+        log.debug("channel is nil msg:",msg)
+    end
+end
+
+local function init()
+    channel=mc.new()
+    dc.set("multall",channel.channel)
+    INFO("set channel id:"..channel.channel)
+end
+
+skynet.init(init)
