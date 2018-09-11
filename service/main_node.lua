@@ -71,13 +71,6 @@ local function start_center()
     end
 end
 
-local function start_scenes()
-    for i,v in pairs(serverconf.scenes) do
-        if nodename==v.node then
-            skynet.newservice("scene","scene",i)
-        end
-    end
-end
 
 --local function testpbc()
 --    local protopack=require "protopack"
@@ -97,7 +90,6 @@ skynet.start(function()
     start_login()
     start_agentpool()
     start_center()
-    start_scenes()
 	start_gate()
 	skynet.exit()
 end)

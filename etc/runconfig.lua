@@ -68,9 +68,6 @@ return {
 		center={
 			[1]={node="node1"}
 		},
-		scenes={
-			[1]={node="node1",name="fucklandlords",cn_name="斗地主"}
-		}
     },
 	--玩家数据表配置
 	playerdata = {
