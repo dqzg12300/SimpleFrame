@@ -97,8 +97,15 @@ local function dispatch(_,_,buff)
     end
     local cmdlist=string.split(cmd,".")
     local ret
+    --if #cmdlist==2 then
+    --    ret=service_dispatch(cmdlist[1],cmdlist[2],msg)
+    --elseif #cmdlist==1 then
+    --    ret=default_dispatch(cmd,msg)
+    --end
+
+    --不建议利用客户端自行跳转。统一交给agent来进行逻辑处理
     if #cmdlist==2 then
-        ret=service_dispatch(cmdlist[1],cmdlist[2],msg)
+        ret=default_dispatch(cmdlist[2],msg)
     elseif #cmdlist==1 then
         ret=default_dispatch(cmd,msg)
     end
