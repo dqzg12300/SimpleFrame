@@ -35,7 +35,7 @@ function CMD.send2client(msg)
     msg._cmd=nil
     msg._check=nil
     local buff=protopack.pack(cmd,check,msg)
-    libsocket.send2client(clientfd,buff)
+    libsocket.send(clientfd,buff)
 end
 
 --与客户端连接断开时的处理
